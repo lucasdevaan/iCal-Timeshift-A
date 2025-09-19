@@ -1,0 +1,33 @@
+name: Update ICS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update-ics:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install requests icalendar pytz
+
+      - name: Run Python script
+        run: python script.py
+        env:
+          ICAL_URL: ${{ secrets.ICAL_URL }}
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add docs/fixed_shifts.ics docs/.nojekyll
+          git commit -m "Update ICS" || true
+          git push
